@@ -35,9 +35,9 @@ public class CategoryRepository(ApplicationDbContext db) : ICategoryRepository
         return [.. _db.Categories.OrderBy(category => category.Name)];
     }
 
-    public Category GetCategory(int id)
+    public Category? GetCategory(int id)
     {
-        return _db.Categories.FirstOrDefault(category => category.Id == id) ?? throw new InvalidOperationException($"Category with Id: {id} was not found.");
+        return _db.Categories.FirstOrDefault(category => category.Id == id);
     }
 
     public bool Save()

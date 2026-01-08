@@ -38,7 +38,7 @@ namespace ApiEcommerce.Controllers
         {
             var category = _categoryRepository.GetCategory(id);
 
-            if (category == null) return NotFound();
+            if (category == null) return NotFound($"Category with Id: {id} was not found.");
 
             var categoryDto = _mapper.Map<CategoryDto>(category);
 
