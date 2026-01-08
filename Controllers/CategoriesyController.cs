@@ -105,5 +105,26 @@ namespace ApiEcommerce.Controllers
 
             return NoContent();
         }
+
+        [HttpDelete("{id:int}", Name = "DeleteCategory")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult DeleteCategory(int id)
+        {
+            if (!_categoryRepository.CategoryExists(id)) return NotFound($"Category with Id: {id} was not found.");
+
+            var category = _categoryRepository.GetCategory(id);
+
+            if (!_categoryRepository.DeleteCategory(category!))
+            {
+                ModelState.AddModelError("CustomError", $"Something went wrong while deleting the category {category!.Name}.");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
     }
 }
