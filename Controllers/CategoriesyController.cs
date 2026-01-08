@@ -114,11 +114,11 @@ namespace ApiEcommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult DeleteCategory(int id)
         {
-            if (!_categoryRepository.CategoryExists(id)) return NotFound($"Category with Id: {id} was not found.");
-
             var category = _categoryRepository.GetCategory(id);
 
-            if (!_categoryRepository.DeleteCategory(category!))
+            if (category == null) return NotFound($"Category with Id: {id} was not found.");
+
+            if (!_categoryRepository.DeleteCategory(category))
             {
                 ModelState.AddModelError("CustomError", $"Something went wrong while deleting the category {category!.Name}.");
                 return StatusCode(500, ModelState);
