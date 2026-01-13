@@ -17,13 +17,13 @@ public class ProductRepository(ApplicationDbContext db) : IProductRepository
     public ICollection<Product> GetProductsForCategory(int categoryId)
     {
         if (categoryId <= 0) return Array.Empty<Product>();
-        return [.. _db.Products.Where(product => product.CategoryId == categoryId).OrderBy(product => product.Name)];
+        return [.. _db.Products.Include(product => product.Category).Where(product => product.CategoryId == categoryId).OrderBy(product => product.Name)];
     }
 
     public ICollection<Product> SearchProduct(string name)
     {
         if (string.IsNullOrWhiteSpace(name)) return Array.Empty<Product>();
-        return [.. _db.Products.Where(product => product.Name.ToLower().Trim() == name.ToLower().Trim()).OrderBy(product => product.Name)];
+        return [.. _db.Products.Include(product => product.Category).Where(product => product.Name.ToLower().Trim() == name.ToLower().Trim()).OrderBy(product => product.Name)];
     }
 
     public Product? GetProduct(int id)
