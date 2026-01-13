@@ -119,5 +119,55 @@ namespace ApiEcommerce.Controllers
             return Ok($"Successfully purchased {quantity} of product: {name}.");
         }
 
+        [HttpPatch("{id:int}", Name = "UpdateProduct")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult UpdateProduct(int id, [FromBody] UpdateProductDto updateProductDto)
+        {
+            if (!_productRepository.ProductExists(id)) return NotFound($"Product with Id: {id} was not found.");
+            if (updateProductDto == null) return BadRequest(ModelState);
+            if (_productRepository.ProductExists(updateProductDto.Name))
+            {
+                ModelState.AddModelError("CustomError", "Product name already in use.");
+                return BadRequest(ModelState);
+            }
+
+            var product = _mapper.Map<Product>(updateProductDto);
+            product.Id = id;
+
+            if (!_productRepository.UpdateProduct(product))
+            {
+                ModelState.AddModelError("CustomError", $"Something went wrong while updating the product {product.Name}.");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id:int}", Name = "DeleteProduct")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult DeleteProduct(int id)
+        {
+            var product = _productRepository.GetProduct(id);
+
+            if (product == null) return NotFound($"Product with Id: {id} was not found.");
+
+            if (!_productRepository.DeleteProduct(product))
+            {
+                ModelState.AddModelError("CustomError", $"Something went wrong while deleting the product {product.Name}.");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
     }
 }
