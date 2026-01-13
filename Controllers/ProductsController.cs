@@ -66,7 +66,9 @@ namespace ApiEcommerce.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return CreatedAtRoute("GetProduct", new { productId = product.Id }, product);
+            var createdProduct = _productRepository.GetProduct(product.Id);
+            var productDto = _mapper.Map<ProductDto>(createdProduct);
+            return CreatedAtRoute("GetProduct", new { productId = product.Id }, productDto);
         }
     }
 }
