@@ -119,7 +119,7 @@ namespace ApiEcommerce.Controllers
             return Ok($"Successfully purchased {quantity} of product: {name}.");
         }
 
-        [HttpPatch("{id:int}", Name = "UpdateProduct")]
+        [HttpPut("{id:int}", Name = "UpdateProduct")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
