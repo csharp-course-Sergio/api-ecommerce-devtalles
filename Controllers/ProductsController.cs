@@ -130,6 +130,13 @@ namespace ApiEcommerce.Controllers
         {
             if (!_productRepository.ProductExists(id)) return NotFound($"Product with Id: {id} was not found.");
             if (updateProductDto == null) return BadRequest(ModelState);
+
+            if (!_categoryRepository.CategoryExists(updateProductDto.CategoryId))
+            {
+                ModelState.AddModelError("CustomError", "Category does not exist.");
+                return BadRequest(ModelState);
+            }
+
             if (_productRepository.ProductExists(updateProductDto.Name))
             {
                 ModelState.AddModelError("CustomError", "Product name already in use.");
