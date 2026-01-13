@@ -8,7 +8,7 @@ public interface IProductRepository
 
     ICollection<Product> GetProducts();
     ICollection<Product> GetProductsForCategory(int categoryId);
-    ICollection<Product> SearchProduct(string name);
+    ICollection<Product> SearchProducts(string term);
     Product? GetProduct(int id);
     bool BuyProduct(string name, int quantity);
     bool ProductExists(int id);
