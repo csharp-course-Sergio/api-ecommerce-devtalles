@@ -99,5 +99,25 @@ namespace ApiEcommerce.Controllers
             return Ok(productsDto);
         }
 
+        [HttpPatch("buyProduct/{name}/{quantity:int}", Name = "BuyProduct")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IActionResult BuyProduct(string name, int quantity)
+        {
+            if (string.IsNullOrWhiteSpace(name) || quantity <= 0) return BadRequest("Invalid product name or quantity.");
+            var product = _productRepository.ProductExists(name);
+            if (!product) return NotFound($"Product not found with name: {name}");
+
+            if (!_productRepository.BuyProduct(name, quantity))
+            {
+                ModelState.AddModelError("CustomError", $"Unable to complete purchase for product: {name}. Insufficient stock or other issue.");
+                return BadRequest(ModelState);
+            }
+
+            return Ok($"Successfully purchased {quantity} of product: {name}.");
+        }
+
     }
 }
