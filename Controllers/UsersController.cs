@@ -9,7 +9,7 @@ namespace ApiEcommerce.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class UsersController(IUserRepository userRepository, IMapper mapper) : ControllerBase
     {
         private readonly IUserRepository _userRepository = userRepository;
