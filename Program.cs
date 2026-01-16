@@ -3,6 +3,7 @@ using ApiEcommerce.Constants;
 using ApiEcommerce.Repository;
 using ApiEcommerce.Repository.IRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -18,7 +19,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 
 builder.Services.AddResponseCaching(options =>
 {
-  options.MaximumBodySize = 1024;
+  options.MaximumBodySize = 1024 * 1024;
   options.UseCaseSensitivePaths = true;
 });
 
@@ -44,7 +45,13 @@ builder.Services.AddAuthentication(options =>
   };
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(
+  options =>
+  {
+    options.CacheProfiles.Add(CacheProfiles.Default10, new CacheProfile { Duration = 10 });
+    options.CacheProfiles.Add(CacheProfiles.Default20, new CacheProfile { Duration = 20 });
+  }
+);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
