@@ -25,14 +25,14 @@ public class UserRepository(
     private readonly RoleManager<IdentityRole> _roleManager = roleManager;
     private readonly IMapper _mapper = mapper;
 
-    public User? GetUser(int id)
+    public ApplicationUser? GetUser(string id)
     {
-        return _db.Users.FirstOrDefault(u => u.Id == id);
+        return _db.ApplicationUsers.FirstOrDefault(u => u.Id == id);
     }
 
-    public ICollection<User> GetUsers()
+    public ICollection<ApplicationUser> GetUsers()
     {
-        return [.. _db.Users.OrderBy(u => u.Username)];
+        return [.. _db.ApplicationUsers.OrderBy(u => u.UserName)];
     }
 
     public bool IsUniqueUser(string username)
