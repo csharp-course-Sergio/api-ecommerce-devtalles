@@ -11,7 +11,7 @@ namespace ApiEcommerce.Controllers.v2
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("2.0")]
     [ApiController]
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "Admin")]
     public class CategoriesController(ICategoryRepository categoryRepository, IMapper mapper) : ControllerBase
     {
         private readonly ICategoryRepository _categoryRepository = categoryRepository;

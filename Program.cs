@@ -3,6 +3,7 @@ using ApiEcommerce.Constants;
 using ApiEcommerce.Models;
 using ApiEcommerce.Repository;
 using ApiEcommerce.Repository.IRepository;
+using ApiEcommerce.Seed;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -17,7 +18,13 @@ var secretKey = builder.Configuration.GetValue<string>("ApiSettings:SecretKey");
 if (string.IsNullOrEmpty(secretKey)) throw new InvalidOperationException("Secret key not found in configuration.");
 
 // Add services to the container.
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(dbConnectionString));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+options.UseSqlServer(dbConnectionString).UseSeeding((context, _) =>
+{
+  var appContext = (ApplicationDbContext)context;
+  SeedData.Seed(appContext);
+})
+);
 
 builder.Services.AddResponseCaching(options =>
 {
