@@ -9,8 +9,7 @@ namespace ApiEcommerce.Controllers
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-    [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
+    [ApiVersionNeutral]
     [Authorize(Roles = "admin")]
     public class UsersController(IUserRepository userRepository, IMapper mapper) : ControllerBase
     {
