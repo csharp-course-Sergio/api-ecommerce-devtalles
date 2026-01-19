@@ -83,6 +83,23 @@ builder.Services.AddSwaggerGen(options =>
         new List<string>()
       }
     });
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+      Version = "v1",
+      Title = "API Ecommerce",
+      Description = "API Ecommerce ASP.NET Core Web API",
+      TermsOfService = new Uri("https://example.com/terms"),
+      Contact = new OpenApiContact
+      {
+        Name = "Soporte API Ecommerce",
+        Url = new Uri("https://example.com/contact")
+      },
+      License = new OpenApiLicense
+      {
+        Name = "API Ecommerce License",
+        Url = new Uri("https://example.com/license")
+      }
+    });
   });
 
 builder.Services.AddApiVersioning(option =>
@@ -90,7 +107,7 @@ builder.Services.AddApiVersioning(option =>
   option.AssumeDefaultVersionWhenUnspecified = true;
   option.DefaultApiVersion = new ApiVersion(1, 0);
   option.ReportApiVersions = true;
-  option.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader("api-version"));
+  // option.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader("api-version"));
 }).AddApiExplorer(option =>
 {
   option.GroupNameFormat = "'v'VVV";
@@ -115,7 +132,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
   app.UseSwagger();
-  app.UseSwaggerUI();
+  app.UseSwaggerUI(options =>
+  {
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+  });
 }
 
 app.UseHttpsRedirection();
