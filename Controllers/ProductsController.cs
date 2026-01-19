@@ -67,27 +67,8 @@ namespace ApiEcommerce.Controllers
 
             var product = _mapper.Map<Product>(createProductDto);
             // image handling
-            if (createProductDto.Image != null)
-            {
-                string fileName = product.Id.ToString() + Guid.NewGuid().ToString() + Path.GetExtension(createProductDto.Image.FileName);
-                var imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProductImages");
-
-                if (!Directory.Exists(imageFolder)) Directory.CreateDirectory(imageFolder);
-
-                var filePath = Path.Combine(imageFolder, fileName);
-                FileInfo file = new(filePath);
-
-                if (file.Exists) file.Delete();
-                using var fileStream = new FileStream(filePath, FileMode.Create);
-                createProductDto.Image.CopyTo(fileStream);
-                var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
-                product.ImgUrl = $"{baseUrl}/ProductImages/{fileName}";
-                product.ImgUrlLocal = filePath;
-            }
-            else
-            {
-                product.ImgUrl = "https://placehold.co/300x300";
-            }
+            if (createProductDto.Image != null) UploadProductImage(createProductDto, product);
+            else product.ImgUrl = "https://placehold.co/300x300";
 
             if (!_productRepository.CreateProduct(product))
             {
@@ -178,27 +159,8 @@ namespace ApiEcommerce.Controllers
             product.Id = id;
 
             // image handling
-            if (updateProductDto.Image != null)
-            {
-                string fileName = product.Id.ToString() + Guid.NewGuid().ToString() + Path.GetExtension(updateProductDto.Image.FileName);
-                var imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProductImages");
-
-                if (!Directory.Exists(imageFolder)) Directory.CreateDirectory(imageFolder);
-
-                var filePath = Path.Combine(imageFolder, fileName);
-                FileInfo file = new(filePath);
-
-                if (file.Exists) file.Delete();
-                using var fileStream = new FileStream(filePath, FileMode.Create);
-                updateProductDto.Image.CopyTo(fileStream);
-                var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
-                product.ImgUrl = $"{baseUrl}/ProductImages/{fileName}";
-                product.ImgUrlLocal = filePath;
-            }
-            else
-            {
-                product.ImgUrl = "https://placehold.co/300x300";
-            }
+            if (updateProductDto.Image != null) UploadProductImage(updateProductDto, product);
+            else product.ImgUrl = "https://placehold.co/300x300";
 
             if (!_productRepository.UpdateProduct(product))
             {
@@ -229,6 +191,24 @@ namespace ApiEcommerce.Controllers
             }
 
             return NoContent();
+        }
+
+        private void UploadProductImage(dynamic productDto, Product product)
+        {
+            string fileName = product.Id.ToString() + Guid.NewGuid().ToString() + Path.GetExtension(productDto.Image.FileName);
+            var imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProductImages");
+
+            if (!Directory.Exists(imageFolder)) Directory.CreateDirectory(imageFolder);
+
+            var filePath = Path.Combine(imageFolder, fileName);
+            FileInfo file = new(filePath);
+
+            if (file.Exists) file.Delete();
+            using var fileStream = new FileStream(filePath, FileMode.Create);
+            productDto.Image.CopyTo(fileStream);
+            var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
+            product.ImgUrl = $"{baseUrl}/ProductImages/{fileName}";
+            product.ImgUrlLocal = filePath;
         }
     }
 }
