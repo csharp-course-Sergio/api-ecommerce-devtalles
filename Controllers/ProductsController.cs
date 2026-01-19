@@ -1,5 +1,6 @@
 using ApiEcommerce.Models;
 using ApiEcommerce.Models.Dtos;
+using ApiEcommerce.Models.Dtos.Responses;
 using ApiEcommerce.Repository.IRepository;
 using Asp.Versioning;
 using AutoMapper;
@@ -61,12 +62,12 @@ namespace ApiEcommerce.Controllers
 
             if (pageNumber > totalPages && totalProducts != 0) return NotFound($"Page number {pageNumber} exceeds total pages {totalPages}.");
 
-            var paginationResponse = new
+            var paginationResponse = new PaginationResponse<ProductDto>
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,
                 TotalPages = totalPages,
-                Products = productsDto
+                Items = productsDto
             };
 
             return Ok(paginationResponse);
