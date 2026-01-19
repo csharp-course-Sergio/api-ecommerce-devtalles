@@ -14,6 +14,19 @@ public class ProductRepository(ApplicationDbContext db) : IProductRepository
         return [.. _db.Products.Include(product => product.Category).OrderBy(product => product.Name)];
     }
 
+    public ICollection<Product> GetProductsPaginated(int pageNumber, int pageSize)
+    {
+        return [.. _db.Products.Include(product => product.Category)
+            .OrderBy(product => product.Id)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)];
+    }
+
+    public int GetTotalProducts()
+    {
+        return _db.Products.Count();
+    }
+
     public ICollection<Product> GetProductsForCategory(int categoryId)
     {
         if (categoryId <= 0) return Array.Empty<Product>();
