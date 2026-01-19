@@ -83,40 +83,8 @@ builder.Services.AddSwaggerGen(options =>
         new List<string>()
       }
     });
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-      Version = "v1",
-      Title = "API Ecommerce",
-      Description = "API Ecommerce ASP.NET Core Web API",
-      TermsOfService = new Uri("https://example.com/terms"),
-      Contact = new OpenApiContact
-      {
-        Name = "Soporte API Ecommerce",
-        Url = new Uri("https://example.com/contact")
-      },
-      License = new OpenApiLicense
-      {
-        Name = "API Ecommerce License",
-        Url = new Uri("https://example.com/license")
-      }
-    });
-    options.SwaggerDoc("v2", new OpenApiInfo
-    {
-      Version = "v2",
-      Title = "API Ecommerce",
-      Description = "API Ecommerce ASP.NET Core Web API",
-      TermsOfService = new Uri("https://example.com/terms"),
-      Contact = new OpenApiContact
-      {
-        Name = "Soporte API Ecommerce",
-        Url = new Uri("https://example.com/contact")
-      },
-      License = new OpenApiLicense
-      {
-        Name = "API Ecommerce License",
-        Url = new Uri("https://example.com/license")
-      }
-    });
+    options.SwaggerDoc("v1", VersionInfo.v1);
+    options.SwaggerDoc("v2", VersionInfo.v2);
   });
 
 builder.Services.AddApiVersioning(option =>
