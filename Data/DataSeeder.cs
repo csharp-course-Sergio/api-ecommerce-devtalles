@@ -1,11 +1,11 @@
 using ApiEcommerce.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace ApiEcommerce.Seed;
+namespace ApiEcommerce.Data;
 
-public class SeedData
+public static class DataSeeder
 {
-    public static void Seed(ApplicationDbContext appContext)
+    public static void SeedData(ApplicationDbContext appContext)
     {
         if (!appContext.Roles.Any())
         {

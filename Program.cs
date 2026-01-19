@@ -1,9 +1,9 @@
 using System.Text;
 using ApiEcommerce.Constants;
+using ApiEcommerce.Data;
 using ApiEcommerce.Models;
 using ApiEcommerce.Repository;
 using ApiEcommerce.Repository.IRepository;
-using ApiEcommerce.Seed;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -22,7 +22,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(dbConnectionString).UseSeeding((context, _) =>
 {
   var appContext = (ApplicationDbContext)context;
-  SeedData.Seed(appContext);
+  DataSeeder.SeedData(appContext);
 })
 );
 
