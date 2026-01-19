@@ -66,6 +66,29 @@ namespace ApiEcommerce.Controllers
             }
 
             var product = _mapper.Map<Product>(createProductDto);
+            // image handling
+            if (createProductDto.Image != null)
+            {
+                string fileName = product.Id.ToString() + Guid.NewGuid().ToString() + Path.GetExtension(createProductDto.Image.FileName);
+                var imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProductImages");
+
+                if (!Directory.Exists(imageFolder)) Directory.CreateDirectory(imageFolder);
+
+                var filePath = Path.Combine(imageFolder, fileName);
+                FileInfo file = new(filePath);
+
+                if (file.Exists) file.Delete();
+                using var fileStream = new FileStream(filePath, FileMode.Create);
+                createProductDto.Image.CopyTo(fileStream);
+                var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
+                product.ImgUrl = $"{baseUrl}/ProductImages/{fileName}";
+                product.ImgUrlLocal = filePath;
+            }
+            else
+            {
+                product.ImgUrl = "https://placehold.co/300x300";
+            }
+
             if (!_productRepository.CreateProduct(product))
             {
                 ModelState.AddModelError("CustomError", $"Something went wrong while saving the product {product.Name}.");
