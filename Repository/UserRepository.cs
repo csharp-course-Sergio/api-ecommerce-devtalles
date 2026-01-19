@@ -5,7 +5,7 @@ using System.Text;
 using ApiEcommerce.Models;
 using ApiEcommerce.Models.Dtos;
 using ApiEcommerce.Repository.IRepository;
-using AutoMapper;
+using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,14 +16,14 @@ public class UserRepository(
     ApplicationDbContext db,
     IConfiguration configuration,
     UserManager<ApplicationUser> userManager,
-    RoleManager<IdentityRole> roleManager,
-    IMapper mapper) : IUserRepository
+    RoleManager<IdentityRole> roleManager
+    ) : IUserRepository
 {
     public readonly ApplicationDbContext _db = db;
     private readonly string? secretKey = configuration.GetValue<string>("ApiSettings:SecretKey");
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly RoleManager<IdentityRole> _roleManager = roleManager;
-    private readonly IMapper _mapper = mapper;
+
 
     public ApplicationUser? GetUser(string id)
     {
@@ -109,7 +109,7 @@ public class UserRepository(
         return new UserLoginResponseDto()
         {
             Token = handlerToken.WriteToken(token),
-            User = _mapper.Map<UserDataDto>(user),
+            User = user.Adapt<UserDataDto>(),
             Message = "Login successful"
         };
     }
@@ -148,7 +148,7 @@ public class UserRepository(
             await _userManager.AddToRoleAsync(user, userRole);
 
             var createdUser = _db.ApplicationUsers.FirstOrDefault(u => u.UserName == createUserDto.Username);
-            return _mapper.Map<UserDataDto>(createdUser);
+            return createdUser.Adapt<UserDataDto>();
         }
 
         var errors = string.Join(",", result.Errors.Select(e => e.Description));

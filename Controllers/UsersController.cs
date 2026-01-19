@@ -1,7 +1,7 @@
 using ApiEcommerce.Models.Dtos;
 using ApiEcommerce.Repository.IRepository;
 using Asp.Versioning;
-using AutoMapper;
+using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,10 +11,9 @@ namespace ApiEcommerce.Controllers
     [ApiController]
     [ApiVersionNeutral]
     [Authorize(Roles = "admin")]
-    public class UsersController(IUserRepository userRepository, IMapper mapper) : ControllerBase
+    public class UsersController(IUserRepository userRepository) : ControllerBase
     {
         private readonly IUserRepository _userRepository = userRepository;
-        private readonly IMapper _mapper = mapper;
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -22,7 +21,7 @@ namespace ApiEcommerce.Controllers
         public IActionResult GetUsers()
         {
             var users = _userRepository.GetUsers();
-            var usersDto = _mapper.Map<List<UserDto>>(users);
+            var usersDto = users.Adapt<List<UserDto>>();
             return Ok(usersDto);
         }
 
@@ -35,7 +34,7 @@ namespace ApiEcommerce.Controllers
         {
             var user = _userRepository.GetUser(id);
             if (user == null) return NotFound($"User not found with ID: {id}");
-            var userDto = _mapper.Map<UserDto>(user);
+            var userDto = user.Adapt<UserDto>();
             return Ok(userDto);
         }
 

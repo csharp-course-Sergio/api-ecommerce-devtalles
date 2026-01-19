@@ -3,7 +3,7 @@ using ApiEcommerce.Models.Dtos;
 using ApiEcommerce.Models.Dtos.Responses;
 using ApiEcommerce.Repository.IRepository;
 using Asp.Versioning;
-using AutoMapper;
+using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,11 +13,10 @@ namespace ApiEcommerce.Controllers
     [ApiController]
     [ApiVersionNeutral]
     [Authorize(Roles = "admin")]
-    public class ProductsController(IProductRepository productRepository, ICategoryRepository categoryRepository, IMapper mapper) : ControllerBase
+    public class ProductsController(IProductRepository productRepository, ICategoryRepository categoryRepository) : ControllerBase
     {
         private readonly IProductRepository _productRepository = productRepository;
         private readonly ICategoryRepository _categoryRepository = categoryRepository;
-        private readonly IMapper _mapper = mapper;
 
         [AllowAnonymous]
         [HttpGet]
@@ -26,7 +25,7 @@ namespace ApiEcommerce.Controllers
         public IActionResult GetProducts()
         {
             var products = _productRepository.GetProducts();
-            var productsDto = _mapper.Map<List<ProductDto>>(products);
+            var productsDto = products.Adapt<List<ProductDto>>();
             return Ok(productsDto);
         }
 
@@ -40,7 +39,7 @@ namespace ApiEcommerce.Controllers
         {
             var product = _productRepository.GetProduct(productId);
             if (product == null) return NotFound($"Product not found with ID: {productId}");
-            var productDto = _mapper.Map<ProductDto>(product);
+            var productDto = product.Adapt<ProductDto>();
             return Ok(productDto);
         }
 
@@ -58,7 +57,7 @@ namespace ApiEcommerce.Controllers
             var totalProducts = _productRepository.GetTotalProducts();
             var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
             var products = _productRepository.GetProductsPaginated(pageNumber, pageSize);
-            var productsDto = _mapper.Map<List<ProductDto>>(products);
+            var productsDto = products.Adapt<List<ProductDto>>();
 
             if (pageNumber > totalPages && totalProducts != 0) return NotFound($"Page number {pageNumber} exceeds total pages {totalPages}.");
 
@@ -95,7 +94,7 @@ namespace ApiEcommerce.Controllers
                 return BadRequest(ModelState);
             }
 
-            var product = _mapper.Map<Product>(createProductDto);
+            var product = createProductDto.Adapt<Product>();
             // image handling
             if (createProductDto.Image != null) UploadProductImage(createProductDto, product);
             else product.ImgUrl = "https://placehold.co/300x300";
@@ -107,7 +106,7 @@ namespace ApiEcommerce.Controllers
             }
 
             var createdProduct = _productRepository.GetProduct(product.Id);
-            var productDto = _mapper.Map<ProductDto>(createdProduct);
+            var productDto = createdProduct.Adapt<ProductDto>();
             return CreatedAtRoute("GetProduct", new { productId = product.Id }, productDto);
         }
 
@@ -122,7 +121,7 @@ namespace ApiEcommerce.Controllers
             if (!_categoryRepository.CategoryExists(categoryId)) return NotFound($"Category not found with ID: {categoryId}");
             var products = _productRepository.GetProductsForCategory(categoryId);
             if (products.Count == 0) return NotFound($"No products found for category ID: {categoryId}");
-            var productsDto = _mapper.Map<List<ProductDto>>(products);
+            var productsDto = products.Adapt<List<ProductDto>>();
             return Ok(productsDto);
         }
 
@@ -137,7 +136,7 @@ namespace ApiEcommerce.Controllers
 
             var products = _productRepository.SearchProducts(term);
             if (products.Count == 0) return NotFound($"No products found matching the term: {term}");
-            var productsDto = _mapper.Map<List<ProductDto>>(products);
+            var productsDto = products.Adapt<List<ProductDto>>();
             return Ok(productsDto);
         }
 
@@ -185,7 +184,7 @@ namespace ApiEcommerce.Controllers
                 return BadRequest(ModelState);
             }
 
-            var product = _mapper.Map<Product>(updateProductDto);
+            var product = updateProductDto.Adapt<Product>();
             product.Id = id;
 
             // image handling
