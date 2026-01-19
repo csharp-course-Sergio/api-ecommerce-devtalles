@@ -150,6 +150,9 @@ public class UserRepository(
             var createdUser = _db.ApplicationUsers.FirstOrDefault(u => u.UserName == createUserDto.Username);
             return _mapper.Map<UserDataDto>(createdUser);
         }
-        throw new ApplicationException("User registration failed");
+
+        var errors = string.Join(",", result.Errors.Select(e => e.Description));
+
+        throw new ApplicationException($"User registration failed: {errors}");
     }
 }
